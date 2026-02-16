@@ -9,7 +9,7 @@ export const updateTask = async (id, updates) => {
   });
   
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    throw new Error(`Failed to update task: ${response.status} ${response.statusText}`);
   }
   
   return response.json();

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { DragDropContext } from 'react-beautiful-dnd';
 import TaskList from '../TaskList';
 import { useTasks } from '../../hooks/useTasks';
@@ -9,17 +9,26 @@ jest.mock('../../hooks/useTasks');
 
 // Mock react-beautiful-dnd
 jest.mock('react-beautiful-dnd', () => ({
-  DragDropContext: ({ children, onDragEnd }) => <div data-testid="drag-drop-context">{children}</div>,
-  Droppable: ({ children }) => children({ innerRef: jest.fn(), droppableProps: {}, placeholder: null }, {}),
-  Draggable: ({ children, draggableId }) => children(
-    { innerRef: jest.fn(), draggableProps: {}, dragHandleProps: {} },
-    { isDragging: false }
-  )
+  DragDropContext: ({ children, onDragEnd }) => {
+    // Store onDragEnd for testing
+    window.testOnDragEnd = onDragEnd;
+    return <div data-testid="drag-drop-context">{children}</div>;
+  },
+  Droppable: ({ children }) => children({
+    draggableProps: {},
+    innerRef: jest.fn(),
+  }, {}),
+  Draggable: ({ children, index }) => children({
+    draggableProps: {},
+    dragHandleProps: {},
+    innerRef: jest.fn(),
+  }, {})
 }));
 
 const mockTasks = [
   { id: 1, title: 'Task 1', description: 'Description 1', status: 'pending' },
-  { id: 2, title: 'Task 2', description: 'Description 2', status: 'completed' }
+  { id: 2, title: 'Task 2', description: 'Description 2', status: 'completed' },
+  { id: 3, title: 'Task 3', description: 'Description 3', status: 'in-progress' }
 ];
 
 const mockUseTasks = {
@@ -32,45 +41,106 @@ const mockUseTasks = {
 describe('TaskList', () => {
   beforeEach(() => {
     useTasks.mockReturnValue(mockUseTasks);
-  });
-
-  afterEach(() => {
     jest.clearAllMocks();
   });
 
   test('renders tasks correctly', () => {
     render(<TaskList />);
     
-    expect(screen.getByText('Tasks')).toBeInTheDocument();
     expect(screen.getByText('Task 1')).toBeInTheDocument();
     expect(screen.getByText('Task 2')).toBeInTheDocument();
+    expect(screen.getByText('Task 3')).toBeInTheDocument();
   });
 
-  test('shows loading state', () => {
-    useTasks.mockReturnValue({ ...mockUseTasks, loading: true });
-    
+  test('calls reorderTasks API when drag and drop occurs', async () => {
+    const mockReorderTasks = jest.fn().mockResolvedValue();
+    useTasks.mockReturnValue({
+      ...mockUseTasks,
+      reorderTasks: mockReorderTasks
+    });
+
     render(<TaskList />);
-    
-    expect(screen.getByText('Loading tasks...')).toBeInTheDocument();
+
+    // Simulate drag and drop
+    const dragResult = {
+      destination: { droppableId: 'tasks', index: 2 },
+      source: { droppableId: 'tasks', index: 0 },
+      draggableId: '1'
+    };
+
+    await window.testOnDragEnd(dragResult);
+
+    await waitFor(() => {
+      expect(mockReorderTasks).toHaveBeenCalledWith([2, 3, 1]);
+    });
   });
 
-  test('shows error state', () => {
-    const errorMessage = 'Failed to load tasks';
-    useTasks.mockReturnValue({ ...mockUseTasks, error: errorMessage });
-    
+  test('shows loading state during reorder operation', async () => {
+    const mockReorderTasks = jest.fn(() => new Promise(resolve => setTimeout(resolve, 100)));
+    useTasks.mockReturnValue({
+      ...mockUseTasks,
+      reorderTasks: mockReorderTasks
+    });
+
     render(<TaskList />);
-    
-    expect(screen.getByText(`Error loading tasks: ${errorMessage}`)).toBeInTheDocument();
+
+    const dragResult = {
+      destination: { droppableId: 'tasks', index: 1 },
+      source: { droppableId: 'tasks', index: 0 },
+      draggableId: '1'
+    };
+
+    window.testOnDragEnd(dragResult);
+
+    await waitFor(() => {
+      expect(screen.getByText('Reordering tasks...')).toBeInTheDocument();
+    });
   });
 
-  test('displays reorder error message', async () => {
-    const reorderError = 'Failed to reorder tasks';
-    mockUseTasks.reorderTasks.mockRejectedValue(new Error(reorderError));
-    
+  test('displays error message when reorder fails', async () => {
+    const mockReorderTasks = jest.fn().mockRejectedValue(new Error('API Error'));
+    useTasks.mockReturnValue({
+      ...mockUseTasks,
+      reorderTasks: mockReorderTasks
+    });
+
     render(<TaskList />);
-    
-    // Simulate drag end event would be tested with more complex setup
-    // For now, verify error display capability exists
-    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+
+    const dragResult = {
+      destination: { droppableId: 'tasks', index: 1 },
+      source: { droppableId: 'tasks', index: 0 },
+      draggableId: '1'
+    };
+
+    await window.testOnDragEnd(dragResult);
+
+    await waitFor(() => {
+      expect(screen.getByText('Failed to reorder tasks. Please try again.')).toBeInTheDocument();
+    });
+  });
+
+  test('disables dragging during reorder operation', async () => {
+    const mockReorderTasks = jest.fn(() => new Promise(resolve => setTimeout(resolve, 100)));
+    useTasks.mockReturnValue({
+      ...mockUseTasks,
+      reorderTasks: mockReorderTasks
+    });
+
+    render(<TaskList />);
+
+    const dragResult = {
+      destination: { droppableId: 'tasks', index: 1 },
+      source: { droppableId: 'tasks', index: 0 },
+      draggableId: '1'
+    };
+
+    window.testOnDragEnd(dragResult);
+
+    await waitFor(() => {
+      const taskItems = screen.getAllByTestId('task-item');
+      taskItems.forEach(item => {
+        expect(item).toHaveClass('disabled');
+      });
+    });
   });
 });

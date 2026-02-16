@@ -4,8 +4,10 @@ import TaskItem from './TaskItem';
 
 const TaskList = ({ tasks = [] }) => {
   const onDragEnd = (result) => {
-    // TODO: Implement drag and drop logic in next ticket
-    console.log('Drag ended:', result);
+    // Drag and drop logic will be implemented in next ticket
+    if (!result.destination) {
+      return;
+    }
   };
 
   return (

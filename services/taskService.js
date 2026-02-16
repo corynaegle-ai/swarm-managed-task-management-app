@@ -3,25 +3,38 @@
 
 class TaskService {
   constructor() {
-    // Initialize with some mock data
-    this.tasks = [
-      {
-        id: '1',
-        title: 'Sample Task 1',
-        description: 'This is a sample task for testing',
-        status: 'pending',
-        priority: 'high',
-        createdAt: new Date().toISOString()
-      },
-      {
-        id: '2',
-        title: 'Sample Task 2',
-        description: 'Another sample task',
-        status: 'completed',
-        priority: 'medium',
-        createdAt: new Date().toISOString()
-      }
-    ];
+    this.storageKey = 'taskManager_tasks';
+    // Load tasks from localStorage or initialize with sample data
+    const storedTasks = localStorage.getItem(this.storageKey);
+    if (storedTasks) {
+      this.tasks = JSON.parse(storedTasks);
+    } else {
+      // Initialize with some mock data
+      this.tasks = [
+        {
+          id: '1',
+          title: 'Sample Task 1',
+          description: 'This is a sample task for testing',
+          status: 'pending',
+          priority: 'high',
+          createdAt: new Date().toISOString()
+        },
+        {
+          id: '2',
+          title: 'Sample Task 2',
+          description: 'Another sample task',
+          status: 'completed',
+          priority: 'medium',
+          createdAt: new Date().toISOString()
+        }
+      ];
+      this.saveTasks();
+    }
+  }
+
+  // Save tasks to localStorage
+  saveTasks() {
+    localStorage.setItem(this.storageKey, JSON.stringify(this.tasks));
   }
 
   // Simulate API delay
@@ -60,6 +73,7 @@ class TaskService {
     }
     
     this.tasks.splice(taskIndex, 1);
+    this.saveTasks(); // Persist to localStorage
     return { success: true, deletedId: id };
   }
 
@@ -74,6 +88,7 @@ class TaskService {
     };
     
     this.tasks.push(newTask);
+    this.saveTasks(); // Persist to localStorage
     return newTask;
   }
 
@@ -92,6 +107,7 @@ class TaskService {
       updatedAt: new Date().toISOString()
     };
     
+    this.saveTasks(); // Persist to localStorage
     return this.tasks[taskIndex];
   }
 }

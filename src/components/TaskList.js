@@ -2,8 +2,8 @@ import React from 'react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import TaskItem from './TaskItem';
 
-const TaskList = ({ tasks = [] }) => {
-  const onDragEnd = (result) => {
+const TaskList = ({ tasks }) => {
+  const handleDragEnd = (result) => {
     // Drag and drop logic will be implemented in next ticket
     if (!result.destination) {
       return;
@@ -11,30 +11,25 @@ const TaskList = ({ tasks = [] }) => {
   };
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <div className="task-list">
-        <h2>Tasks</h2>
-        <Droppable droppableId="tasks">
-          {(provided, snapshot) => (
-            <div
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-              className={`task-list-container ${
-                snapshot.isDraggingOver ? 'dragging-over' : ''
-              }`}
-            >
-              {tasks.map((task, index) => (
-                <TaskItem
-                  key={task.id}
-                  task={task}
-                  index={index}
-                />
-              ))}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </div>
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <Droppable droppableId="tasks">
+        {(provided) => (
+          <div
+            className="task-list"
+            {...provided.droppableProps}
+            ref={provided.innerRef}
+          >
+            {tasks.map((task, index) => (
+              <TaskItem
+                key={task.id}
+                task={task}
+                index={index}
+              />
+            ))}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
     </DragDropContext>
   );
 };

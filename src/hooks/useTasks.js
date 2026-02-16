@@ -33,17 +33,25 @@ export const useTaskUpdate = () => {
   };
 };
 
-// Main tasks hook (placeholder - would contain other task operations)
+// Main tasks hook for managing task list state
 export const useTasks = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Placeholder implementation
+  const updateTaskInList = useCallback((id, updates) => {
+    setTasks(prevTasks => 
+      prevTasks.map(task => 
+        task.id === id ? { ...task, ...updates } : task
+      )
+    );
+  }, []);
+
   return {
     tasks,
     loading,
     error,
-    setTasks
+    setTasks,
+    updateTaskInList
   };
 };

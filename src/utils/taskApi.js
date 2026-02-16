@@ -10,14 +10,19 @@ export const updateTask = async (id, updates) => {
     });
     
     if (!response.ok) {
-      throw new Error(`Failed to update task: ${response.status} ${response.statusText}`);
+      const error = new Error(`Failed to update task: ${response.status} ${response.statusText}`);
+      error.type = 'HTTP_ERROR';
+      error.status = response.status;
+      throw error;
     }
     
     return response.json();
   } catch (error) {
     // Handle network failures (no response) separately from HTTP errors
     if (error instanceof TypeError && error.message.includes('fetch')) {
-      throw new Error('Network error: Unable to reach the server. Please check your connection.');
+      const networkError = new Error('Network error: Unable to reach the server. Please check your connection.');
+      networkError.type = 'NETWORK_ERROR';
+      throw networkError;
     }
     // Re-throw other errors (including HTTP errors from response.ok check)
     throw error;

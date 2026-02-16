@@ -64,10 +64,11 @@ const tasksSlice = createSlice({
       })
       .addCase(deleteTaskAsync.fulfilled, (state, action) => {
         const taskId = action.payload;
-        delete state.deletingTasks[taskId];
-        delete state.deleteErrors[taskId];
         // Remove task from items array
         state.items = state.items.filter(task => task.id !== taskId);
+        // Explicitly cleanup deletion tracking state for the removed task
+        delete state.deletingTasks[taskId];
+        delete state.deleteErrors[taskId];
       })
       .addCase(deleteTaskAsync.rejected, (state, action) => {
         const taskId = action.meta.arg;

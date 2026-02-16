@@ -1,0 +1,150 @@
+.task-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  background-color: #ffffff;
+  border: 1px solid #e1e5e9;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.task-item:hover {
+  border-color: #c3c8d0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.task-item.completed {
+  opacity: 0.7;
+  background-color: #f8f9fa;
+}
+
+.task-content {
+  display: flex;
+  align-items: flex-start;
+  flex: 1;
+  gap: 12px;
+}
+
+.task-checkbox {
+  margin-top: 2px;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.task-details {
+  flex: 1;
+}
+
+.task-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: #2c3e50;
+  line-height: 1.4;
+}
+
+.task-item.completed .task-title {
+  text-decoration: line-through;
+  color: #7f8c8d;
+}
+
+.task-description {
+  margin: 4px 0 0 0;
+  font-size: 14px;
+  color: #6c757d;
+  line-height: 1.4;
+}
+
+.task-item.completed .task-description {
+  color: #95a5a6;
+}
+
+.task-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.task-action-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  background-color: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  padding: 0;
+}
+
+.task-action-button:hover {
+  background-color: #f1f3f4;
+}
+
+.task-action-button:active {
+  transform: scale(0.95);
+}
+
+.delete-button {
+  color: #dc3545;
+}
+
+.delete-button:hover {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.delete-button:focus {
+  outline: 2px solid #dc3545;
+  outline-offset: 2px;
+}
+
+.trash-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .task-item {
+    padding: 10px 12px;
+  }
+  
+  .task-content {
+    gap: 10px;
+  }
+  
+  .task-title {
+    font-size: 15px;
+  }
+  
+  .task-description {
+    font-size: 13px;
+  }
+  
+  .task-action-button {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .trash-icon {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .task-item {
+    padding: 8px 10px;
+  }
+  
+  .task-actions {
+    gap: 6px;
+  }
+}

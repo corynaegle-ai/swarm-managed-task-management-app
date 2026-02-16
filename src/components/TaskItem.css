@@ -1,0 +1,162 @@
+.task-item {
+  display: flex;
+  align-items: stretch;
+  background: white;
+  border: 1px solid #e1e5e9;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.task-item:hover {
+  border-color: #c1c7cd;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.task-item.dragging {
+  transform: rotate(5deg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  border-color: #4285f4;
+}
+
+.drag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  background: #f5f5f5;
+  border-right: 1px solid #e1e5e9;
+  border-radius: 8px 0 0 8px;
+  cursor: grab;
+  transition: background-color 0.2s ease;
+}
+
+.drag-handle:hover {
+  background: #e9ecef;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+  background: #dee2e6;
+}
+
+.drag-icon {
+  color: #6c757d;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: -2px;
+  transform: rotate(90deg);
+  user-select: none;
+}
+
+.task-content {
+  flex: 1;
+  padding: 16px;
+  min-height: 60px;
+}
+
+.task-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.task-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+  line-height: 1.4;
+}
+
+.task-actions {
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.task-item:hover .task-actions {
+  opacity: 1;
+}
+
+.edit-btn,
+.delete-btn {
+  background: none;
+  border: none;
+  padding: 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.edit-btn:hover {
+  background: #e3f2fd;
+}
+
+.delete-btn:hover {
+  background: #ffebee;
+}
+
+.task-description {
+  margin: 0 0 12px 0;
+  color: #6c757d;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.task-meta {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 12px;
+}
+
+.priority {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.priority-low {
+  background: #d4edda;
+  color: #155724;
+}
+
+.priority-medium {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.priority-high {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.due-date {
+  color: #6c757d;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .task-item {
+    margin-bottom: 12px;
+  }
+  
+  .task-content {
+    padding: 12px;
+  }
+  
+  .task-header {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .task-actions {
+    opacity: 1;
+    align-self: flex-end;
+  }
+}
